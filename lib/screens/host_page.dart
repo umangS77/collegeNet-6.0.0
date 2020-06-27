@@ -77,6 +77,7 @@ class _NewEventState extends State<NewEvent> {
     _imageURLFocusNode.addListener(_updateImageUrl);
     super.initState();
   }
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -567,7 +568,7 @@ class _NewEventState extends State<NewEvent> {
                                 _editedEvent = Event2(
                                   title: _editedEvent.title,
                                   description: _editedEvent.description,
-                                  imageURL: _editedEvent.description,
+                                  imageURL: _editedEvent.imageURL,
                                   noOfPraticipants:
                                       _editedEvent.noOfPraticipants,
                                   startDate: _editedEvent.startDate,
