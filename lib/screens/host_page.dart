@@ -11,7 +11,7 @@ import '../providers/event1.dart';
 import 'package:provider/provider.dart';
 import '../providers/events.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 final eventsfileRef = Firestore.instance.collection("eventsfile");
 final StorageReference storageRef = FirebaseStorage.instance.ref();
@@ -32,6 +32,8 @@ class _NewEventState extends State<NewEvent> {
 
   bool isUploading = false;
   bool toggleValue = false;
+
+  FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
   final _fNode = FocusNode();
   final _dfNode = FocusNode();
   final _imageURLController = TextEditingController();
@@ -68,15 +70,20 @@ class _NewEventState extends State<NewEvent> {
   };
   @override
   void initState() {
-    OneSignal.shared.init("b0d9755c-6dc4-4722-8935-1d3b1daabd61", iOSSettings: {
-      OSiOSSettings.autoPrompt: false,
-      OSiOSSettings.inAppLaunchUrl: false
+    firebaseMessaging.getToken().then((token) {
+      update(token);
     });
-    OneSignal.shared
-        .setInFocusDisplayType(OSNotificationDisplayType.notification);
     _imageURLFocusNode.addListener(_updateImageUrl);
     super.initState();
   }
+
+  update(String token) {
+    print(token);
+    DatabaseReference databaseReference = new FirebaseDatabase().reference();
+    databaseReference.child('fcm-token/${token}').set({"token": token});
+    setState(() {});
+  }
+
   @override
   void didChangeDependencies() {
     if (_isInit) {
@@ -129,16 +136,6 @@ class _NewEventState extends State<NewEvent> {
     if (!isValid) {
       return;
     }
-    var status = await OneSignal.shared.getPermissionSubscriptionState();
-    var playerId = status.subscriptionStatus.userId;
-    await OneSignal.shared.postNotification(OSCreateNotification(
-        playerIds: [playerId],
-        content: "this is a test from OneSignal's Flutter SDK",
-        heading: "Test Notification",
-        buttons: [
-          OSActionButton(text: "test1", id: "id1"),
-          OSActionButton(text: "test2", id: "id2")
-        ]));
 //    handleUpload();
     _form.currentState.save();
     setState(() {
