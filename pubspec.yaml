@@ -48,8 +48,6 @@ dependencies:
   firebase_database: ^3.1.6
   firebase_messaging: ^6.0.16
   image_picker: ^0.6.7+1
-  onesignal_flutter: ^2.5.0
-
 
 dev_dependencies:
   flutter_test:

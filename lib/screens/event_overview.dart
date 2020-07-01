@@ -3,6 +3,8 @@ import '../widgets/app_drawer.dart';
 import '../widgets/events_grid.dart';
 import 'package:provider/provider.dart';
 import '../providers/events.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 enum FilterOptions {
   Going,
@@ -20,10 +22,29 @@ class _EventOverviewState extends State<EventOverview> {
   var _isLoading = false;
   @override
   void initState() {
-    // Future.delayed(Duration.zero).then((_) {
-
-    // });
+    final fbm = FirebaseMessaging();
+    fbm.requestNotificationPermissions();
+    fbm.configure(onMessage: (msg) {
+      print(msg);
+      return;
+    }, onLaunch: (msg) {
+      print(msg);
+      return;
+    }, onResume: (msg) {
+      print(msg);
+      return;
+    });
+    fbm.getToken().then((token) {
+      update(token);
+    });
     super.initState();
+  }
+
+  update(String token) {
+    print(token);
+    DatabaseReference databaseReference = new FirebaseDatabase().reference();
+    databaseReference.child('fcm-token/${token}').set({"token": token});
+    setState(() {});
   }
 
   @override
